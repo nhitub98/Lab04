@@ -47,6 +47,7 @@ INNER JOIN
 SinhVien ON Khoa.MaKH = SinhVien.MaKH
 WHERE  Khoa.TenKH = N'Anh Văn'
 go
+
 --12.
 SELECT masv, hosv + ' ' + tensv as [họ tên sinh viên], ngaysinh
 FROM Khoa 
@@ -55,6 +56,7 @@ ON Khoa.MaKH = SinhVien.MaKH
 WHERE  Khoa.TenKH = N'Vật Lý'
 order by ngaysinh desc
 go
+
 --13. 
 select masv, hosv + ' ' + tensv as [họ tên sinh viên], sinhvien.makh, hocbong
 from sinhvien
@@ -63,53 +65,59 @@ on sinhvien.makh=khoa.makh
 where hocbong>500000
 order by makh desc
 go
+
 --14.
-select masv, hosv + ' ' + tensv as [họ tên sinh viên], sinhvien.makh, hocbong
+select  hosv + ' ' + tensv as [họ tên sinh viên], sinhvien.makh, hocbong
 from sinhvien
 where datepart(year, ngaysinh) = 1987 and
       datepart(month, ngaysinh) = 12 and
       datepart(day, ngaysinh) = 20
 go
 --15.
-select hosv,tensv,convert(varchar(10),ngaysinh, 103) as 'ngày sinh',noisinh,hocbong
+select hosv + ' ' + tensv as [họ tên sinh viên],convert(varchar(10),ngaysinh, 103) as 'ngày sinh',noisinh,hocbong
 from sinhvien
-where ngaysinh> '1988/12/20'
+where ngaysinh> '1977/12/20'
 order by ngaysinh desc
 go
 --16.
 select hosv + ' ' + tensv as [họ tên sinh viên], sinhvien.makh, noisinh,hocbong
 from sinhvien
-where hocbong>100000 and noisinh=N'Tp.HCM'
+where hocbong>100000 and noisinh=N'Tp. HCM'
 order by  ngaysinh desc
 go
+
 --17. 
-select masv, sinhvien.makh, phai
-from sinhvien
-inner join khoa on sinhvien.makh=khoa.makh
-where khoa.TenKH=N'Anh Văn' or khoa.TenKH=N'Triết'
+select masv, sv.makh, phai
+from sinhvien sv
+inner join khoa kh on sv.makh=kh.makh
+where kh.TenKH=N'Anh Văn' or kh.TenKH=N'Triết'
 go
+
 --18.
 SELECT masv, ngaysinh,noisinh,hocbong
 FROM sinhvien
 WHERE ngaysinh BETWEEN '1986-01-01' AND '1992-06-05';
 go
 --19.
-select masv, ngaysinh, phai, sinhvien.makh
-from sinhvien
+select masv, ngaysinh, phai, sv.makh
+from sinhvien sv
 where hocbong between 200000 and 800000
 go
+
 --20.
 select mamh, tenmh, sotiet
 from monhoc
 where sotiet>40 and sotiet<60
 go
+
 --21.
 select masv, hosv + ' ' + tensv as [họ tên sinh viên], phai 
-from sinhvien
-inner join khoa
-on sinhvien.makh=khoa.makh
-where phai='0' and khoa.TenKH=N'Anh Văn'
+from sinhvien sv
+inner join khoa kh
+on sv.makh=kh.makh
+where phai='0' and kh.TenKH=N'Anh Văn'
 go
+
 --22.
 select hosv, tensv, noisinh, ngaysinh
 from sinhvien
@@ -122,13 +130,14 @@ from sinhvien
 where tensv like N'%N%' and phai='1'
 --24. 
 select *
-from sinhvien
-inner join khoa
-on sinhvien.makh=khoa.makh
-where phai='0' and khoa.TenKH=N'Tin Học' and ngaysinh>'1986/05/30'
+from sinhvien sv
+inner join khoa kh
+on sv.makh=kh.makh
+where phai='0' and kh.TenKH=N'Tin Học' and ngaysinh>'1986/05/30'
 go
+
 --25. 
-select hosv + ' ' + tensv as [họ và tên sinh viên],     phai = IIF(phai = 0, N'Nam', IIF(phai = 1, N'Nữ', N'Khác')), ngaysinh
+select hosv + ' ' + tensv as [họ và tên sinh viên], phai = IIF(phai = 0, N'Nam', IIF(phai = 1, N'Nữ', N'Khác')), ngaysinh
 from sinhvien
 
 --26.
@@ -162,30 +171,34 @@ select *
 from sinhvien
 order by ngaysinh desc
 --4.
+Select sv.masv, phai, sv.makh, 'Mức học bổng'=IIF(hocbong>500000, N'Học bổng cao', IIF(hocbong<500000, N'Mức Trung bình',N'Khác'))
+from sinhvien sv
+
 --5. 
-SELECT hosv + ' ' + tensv AS [họ tên sinh viên], ketqua.MaMH, ketqua.diem
-FROM sinhvien
-INNER JOIN ketqua ON sinhvien.masv = ketqua.MaSV
-ORDER BY tensv ASC, ketqua.MaMH ASC;
+SELECT  hosv + ' ' + tensv AS [họ tên sinh viên], kq.MaMH, kq.diem
+FROM sinhvien sv
+join ketqua kq ON sv.masv = kq.MaSV
+join monhoc mh on mh.mamh=kq.MaMH
+ORDER BY hosv ASC, tensv ASC, kq.MaMH ASC
 --6.
 SELECT
     hosv + ' ' + tensv AS [họ tên sinh viên],
-    phai = IIF(phai = 1, N'Nam', IIF(phai = 0, N'Nữ', N'Khác')),
+    phai = IIF(phai = 0, N'Nam', IIF(phai = 1, N'Nữ', N'Khác')),
     khoa.makh
 FROM
     sinhvien
     INNER JOIN khoa ON sinhvien.MaKH = khoa.MaKH
 WHERE
-    khoa.TenKH = N'Anh Văn';
+    khoa.TenKH = N'Anh Văn'
 --7.
-SELECT  hosv + ' ' + tensv AS [họ tên sinh viên],MonHoc.TenMH,MonHoc.Sotiet,Ketqua.Diem
-FROM     Ketqua 
-INNER JOIN MonHoc ON Ketqua.MaMH = MonHoc.MaMH 
-INNER JOIN SinhVien ON Ketqua.MaSV = SinhVien.MaSV INNER JOIN
-           Khoa ON SinhVien.MaKH = Khoa.MaKH
-WHERE  Khoa.TenKH = N'Tin học'
+SELECT  kh.tenkh, hosv + ' ' + tensv AS [họ tên sinh viên],Mh.TenMH,Mh.Sotiet,Kq.Diem
+FROM     Ketqua  kq
+INNER JOIN MonHoc mh ON kq.MaMH = Mh.MaMH 
+INNER JOIN SinhVien sv ON Kq.MaSV = Sv.MaSV 
+INNER JOIN Khoa kh ON Sv.MaKH = Kh.MaKH
+WHERE  Kh.TenKH = N'Tin học'
 --8.
-SELECT hosv + ' ' + tensv AS [họ tên sinh viên], Khoa.MaKH, MonHoc.TenMH, diem = IIF(Diem > 8, N'Giỏi', IIF(Diem BETWEEN 6 AND 8, N'Khá', N'Trung bình'))
+SELECT hosv + ' ' + tensv AS [họ tên sinh viên], Khoa.MaKH, MonHoc.TenMH, diem, 'Loại' = IIF(Diem > 8, N'Giỏi', IIF(Diem BETWEEN 6 AND 8, N'Khá', N'Trung bình'))
 FROM Ketqua
     INNER JOIN MonHoc ON Ketqua.MaMH = MonHoc.MaMH
     INNER JOIN SinhVien ON Ketqua.MaSV = SinhVien.MaSV
@@ -193,27 +206,29 @@ FROM Ketqua
 
 -------------------BÀI 3: Tính toán thống kê dữ liệu---------------------------------------------
 --1.
-SELECT MonHoc.MaMH, MonHoc.TenMH,AVG(Ketqua.Diem) AS [Điểm trung bình]
+SELECT MonHoc.MaMH, MonHoc.TenMH,round(isnull(AVG(diem),0),2) AS [Trung bình điểm thi]
 FROM Ketqua
     INNER JOIN MonHoc ON Ketqua.MaMH = MonHoc.MaMH
 GROUP BY MonHoc.MaMH, MonHoc.TenMH;
+
 --2.
 select  hosv + ' ' + tensv AS [họ tên sinh viên],khoa.tenkh, count(*) as [Tổng số môn thi]
 FROM Ketqua
 INNER JOIN SinhVien ON Ketqua.MaSV = SinhVien.MaSV
 INNER JOIN Khoa ON SinhVien.MaKH = Khoa.MaKH
 GROUP BY SinhVien.HoSV, SinhVien.TenSV,Khoa.TenKH;
+
 --3.
 SELECT
     hosv + ' ' + tensv AS [họ tên sinh viên],
-    Khoa.TenKH AS [Tên khoa],
+    Khoa.TenKH,
     phai,
     SUM(Ketqua.Diem) AS [Tổng điểm thi]
-FROM
-    Ketqua
+FROM Ketqua
     INNER JOIN SinhVien ON Ketqua.MaSV = SinhVien.MaSV
     INNER JOIN Khoa ON SinhVien.MaKH = Khoa.MaKH
 GROUP BY HoSV,TenSV, Khoa.TenKH, SinhVien.Phai;
+
 --4.
 SELECT Khoa.TenKH, COUNT(MaSV) AS [Tổng số sinh viên]
 FROM
@@ -230,18 +245,169 @@ GROUP BY
    sinhvien.hosv,sinhvien.tensv, ketqua.masv
 
 --6. 
-select monhoc.TenMH, sotiet as [Số tiết nhiều nhất]
+select monhoc.TenMH, sotiet
 from monhoc
 where sotiet=(select max(sotiet) from monhoc)
+
 --7.
-select khoa.makh, khoa.tenkh, sinhvien.hocbong as [Học bổng cao nhất của khoa]
-from khoa, sinhvien
-where hocbong=(select max(hocbong) from sinhvien)
+select khoa.makh, khoa.tenkh, max(hocbong) as [Học bổng cao nhất]
+from khoa
+inner join sinhvien on khoa.makh=sinhvien.makh
+group by khoa.makh, khoa.tenkh
+
 --8.-----------------------
-SELECT MonHoc.TenMH, Ketqua.Diem
+SELECT MonHoc.TenMH, max(Ketqua.Diem) as [Điểm cao nhất]
 FROM   Ketqua 
 INNER JOIN
 MonHoc ON Ketqua.MaMH = MonHoc.MaMH
-WHERE  Ketqua.Diem = (SELECT max(diem) FROM ketqua) 
+group by monhoc.tenmh
+
 -----------------
---9.
+--9. 
+select mh.mamh,mh.tenmh, count(distinct masv) as [Số sinh viên đang học]
+from ketqua kq, monhoc mh
+where kq.mamh=mh.mamh
+group by mh.mamh, mh.tenmh
+
+--10. 
+
+select mh.tenmh, mh.sotiet, sv.tensv, kq.diem as [Điểm cao nhất]
+from sinhvien sv
+join ketqua kq on kq.masv=sv.masv
+join monhoc mh on mh.mamh=kq.mamh
+where diem = (select max(diem) from ketqua)
+group by  mh.tenmh, mh.sotiet, sv.tensv, kq.diem
+
+--11.
+select k.makh, k.tenkh, s.masv as [Tổng số sinh viên]
+from khoa as k
+join sinhvien as s on k.makh=s.makh
+where masv = (select count(masv) from sinhvien)
+group by k.makh, k.tenkh, s.masv
+go
+
+
+--12. 
+select k.TenKH, hosv + ' ' + tensv AS [họ tên sinh viên], s.hocbong
+from khoa as k
+join sinhvien as s on k.makh=s.makh
+where s.hocbong=(select max(hocbong) from sinhvien)
+go
+--13.
+select s.masv,s.hosv, s.tensv,  k.TenKH, s.hocbong
+from khoa as k
+join sinhvien as s on k.makh=s.makh
+where k.tenkh=N'Tin học' and  s.hocbong=(select max(hocbong) from sinhvien where MaKH='TH') 
+go
+
+--14. 
+select hosv+' '+tensv 'Họ tên sinh viên',tenmh,diem
+from ketqua kq,monhoc mh,sinhvien sv
+where sv.masv=kq.masv 
+and kq.mamh=mh.mamh 
+and tenmh=N'cơ sở dữ liệu'
+and diem=(select max(diem)
+from ketqua kq,monhoc mh
+where kq.mamh=mh.mamh and tenmh=N'cơ sở dữ liệu')
+--15.
+select hosv + ' ' + tensv as [họ và tên sinh viên], tenkh, TenMH, diem=(select top 3 diem from ketqua )
+from sinhvien sv 
+join ketqua kq on sv.masv=kq.masv
+join monhoc mh on kq.mamh=mh.mamh
+ join khoa kh on sv.makh=kh.makh
+where mh.TenMH=N'Đồ họa'
+
+
+--16.
+select kh.makh,kh.tenkh
+from sinhvien sv,khoa kh
+where sv.makh=kh.makh and phai=1
+group by tenkh,kh.makh
+having count(tenkh)>=all(select count(masv)
+from sinhvien
+where phai=1
+group by makh)
+--17.
+select kh.makh,kh.tenkh, tongsv = (select count(masv) from sinhvien where makh=kh.makh), 
+'tong sv nu' = (select count(masv) from sinhvien where makh=kh.makh and phai=1)
+from sinhvien sv 
+join khoa kh on sv.makh=kh.makh
+group by kh.makh, kh.tenkh
+--18. 
+SELECT
+    hosv + ' ' + tensv AS [Họ và tên sinh viên],
+    kh.TenKH, sum(diem) as [kết quả],
+   case 
+   when sum(diem)>5 then N'đậu'
+   when sum(diem)<5 then N'Rớt'
+   end as [kết quả]
+       
+FROM
+    sinhvien sv
+    JOIN ketqua kq ON sv.masv = kq.masv
+    JOIN monhoc mh ON kq.mamh = mh.mamh
+    JOIN khoa kh ON sv.makh = kh.makh
+GROUP BY
+    hosv, tensv, tenkh;
+--19. 
+
+
+--23. 
+select mamh,tenmh
+from monhoc
+where mamh in (select mamh from ketqua group by  mamh having min(diem)>5)
+--24.
+select distinct sv.masv,hosv + ' ' + tensv as [họ và tên sinh viên],kh.makh 
+from sinhvien sv 
+join ketqua kq on sv.masv=kq.masv
+join khoa kh on sv.makh=kh.makh
+where sv.masv in (select masv from ketqua group by masv having min(diem)>5)
+--25.
+select sv.masv,hosv + ' ' + tensv as [họ và tên sinh viên],sv.makh 
+from sinhvien sv 
+join ketqua kq on sv.masv=kq.masv
+join monhoc mh on kq.mamh=mh.mamh
+where diem<5
+group by sv.masv, hosv, tensv, makh
+having count(mh.mamh)>=2
+--26.
+select kh.makh,tenkh, 'Tổng số sinh viên của khoa'=count(masv)
+from sinhvien sv
+join khoa kh on sv.makh=kh.makh
+group by kh.makh, kh.tenkh
+having count(masv)>=10
+--27.
+select sv.masv,hosv + ' ' + tensv as [họ và tên sinh viên], 'Số môn thi'=count(mh.mamh)
+from sinhvien sv
+join ketqua kq on sv.masv=kq.masv
+join monhoc mh on kq.mamh=mh.mamh
+join khoa kh on sv.makh=kh.makh
+group by sv.masv, hosv, tensv
+having count(mh.mamh)>=4
+--28. 
+select kh.makh,kh.tenkh, 'Tổng số sinh viên nam'=count(sv.masv)
+from sinhvien sv
+join khoa kh on sv.makh=kh.makh
+where phai=0 
+group by kh.makh, kh.tenkh
+having count(sv.masv)>=5
+--29. 
+SELECT hosv + ' ' + tensv as [họ và tên sinh viên], kh.tenkh, sv.phai, AVG(kq.Diem) AS [Điểm trung bình các môn]
+FROM
+    sinhvien sv
+join ketqua kq ON sv.MaSV = kq.MaSV
+join khoa kh on sv.makh=kh.makh
+GROUP BY sv.hosv, sv.tensv,kh.tenkh,sv.phai
+HAVING
+    AVG(kq.Diem) > 4;
+
+--30.
+SELECT mh.mamh, mh.tenmh, avg(diem) as [Trung bình điểm]
+FROM ketqua kq
+join monhoc mh on kq.MaMH=mh.MaMH
+GROUP BY mh.mamh, mh.tenmh
+HAVING
+    AVG(kq.Diem) > 6;
+-----------------Bài 4. Sử dụng tham số trong truy vấn
+1. 
+
