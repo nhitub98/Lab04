@@ -350,12 +350,45 @@ FROM
 GROUP BY
     hosv, tensv, tenkh;
 --19. 
-
+--20.
+select mamh,tenmh
+from monhoc
+where mamh in (select mamh from ketqua group by  mamh having min(diem)>5)
+--21.
+SELECT DISTINCT
+    kh.makh,
+    kh.tenkh
+FROM
+    khoa kh
+JOIN
+    sinhvien sv ON sv.makh = kh.makh
+WHERE
+    EXISTS (
+        SELECT *
+        FROM
+            sinhvien sv
+            JOIN ketqua kq ON kq.masv = sv.masv
+        WHERE
+            sv.makh = kh.makh
+            AND kq.diem > 5)
+--22.
+SELECT
+    mh.MaMH,
+    mh.TenMH,
+    COUNT(CASE WHEN kq.Diem >= 5 THEN 1 END) AS [Số sinh viên đậu],
+    COUNT(CASE WHEN kq.Diem < 5 THEN 1 END) AS [Số sinh viên rớt]
+FROM
+    MonHoc mh
+    INNER JOIN Ketqua kq ON mh.MaMH = kq.MaMH
+GROUP BY
+    mh.MaMH,
+    mh.TenMH;
 
 --23. 
 select mamh,tenmh
 from monhoc
-where mamh in (select mamh from ketqua group by  mamh having min(diem)>5)
+where mamh not in (select mamh from ketqua kq where kq.diem<4)
+
 --24.
 select distinct sv.masv,hosv + ' ' + tensv as [họ và tên sinh viên],kh.makh 
 from sinhvien sv 
